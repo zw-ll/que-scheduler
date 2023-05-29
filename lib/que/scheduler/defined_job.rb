@@ -19,6 +19,7 @@ module Que
       property :priority
       property :args_array
       property :schedule_type, default: DEFINED_JOB_TYPE_DEFAULT
+      property :tenant
 
       class << self
         def create(options)
@@ -63,6 +64,9 @@ module Que
         end
         unless priority.nil? || priority.is_a?(Integer)
           err_field(:priority, options, "priority must be an integer")
+        end
+        unless tenant.nil? || tenant.is_a?(String)
+          err_field(:tenant, options, "tenant must be a string")
         end
         unless DEFINED_JOB_TYPES.include?(schedule_type)
           err_field(:schedule_type, options, "Not in #{DEFINED_JOB_TYPES}")
@@ -114,7 +118,7 @@ module Que
       def generate_to_enqueue_list(missed_times)
         return [] if missed_times.empty?
 
-        options = to_h.slice(:args, :queue, :priority, :job_class).compact
+        options = to_h.slice(:args, :queue, :priority, :job_class, :tenant).compact
 
         if schedule_type == DefinedJob::DEFINED_JOB_TYPE_EVERY_EVENT
           missed_times.map do |time_missed|

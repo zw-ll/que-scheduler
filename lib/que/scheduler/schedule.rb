@@ -69,6 +69,7 @@ module Que
             queue: defined_job_hash["queue"],
             args_array: args_array,
             priority: defined_job_hash["priority"],
+            tenant: defined_job_hash["tenant"],
             cron: defined_job_hash["cron"],
             schedule_type: defined_job_hash["schedule_type"]&.to_sym
           )

@@ -8,6 +8,7 @@ module Que
       property :args, required: true, default: []
       property :queue
       property :priority
+      property :tenant
       property :run_at, required: true
       property :job_class, required: true
 
@@ -24,6 +25,10 @@ module Que
 
         def active_job_defined?
           Object.const_defined?(:ActiveJob)
+        end
+
+        def apartment_defined?
+          Object.const_defined?("Apartment::Tenant")
         end
 
         def active_job_version
@@ -128,6 +133,7 @@ module Que
           run_at: scheduled_at,
           job_class: job_class.to_s,
           job_id: data.fetch(:provider_job_id),
+          tenant: tenant
         }
       end
 
@@ -166,6 +172,7 @@ module Que
       property :args
       property :queue
       property :priority
+      property :tenant
       property :run_at, required: true
       property :job_class, required: true
       property :job_id, required: true
