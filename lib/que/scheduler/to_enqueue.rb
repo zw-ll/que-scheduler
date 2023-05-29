@@ -23,7 +23,7 @@ module Que
         end
 
         def active_job_defined?
-          Object.const_defined?("ActiveJob")
+          Object.const_defined?(:ActiveJob)
         end
 
         def active_job_version
@@ -139,10 +139,23 @@ module Que
         }.compact
 
         job_class_set = job_class.set(**job_settings)
-        if args.is_a?(Hash)
-          job_class_set.perform_later(**args)
+
+        if Object.const_defined?("Apartment::Tenant")
+          # to correctly set tenant in job_data
+          # otherwise it is overwritten and set to public in some ActiveJob callbacks
+          Apartment::Tenant.switch tenant do
+            if args.is_a?(Hash)
+              job_class_set.perform_later(**args)
+            else
+              job_class_set.perform_later(*args)
+            end
+          end
         else
-          job_class_set.perform_later(*args)
+          if args.is_a?(Hash)
+            job_class_set.perform_later(**args)
+          else
+            job_class_set.perform_later(*args)
+          end
         end
       end
     end
