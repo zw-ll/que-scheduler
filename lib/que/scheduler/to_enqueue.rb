@@ -27,10 +27,6 @@ module Que
           Object.const_defined?(:ActiveJob)
         end
 
-        def apartment_defined?
-          Object.const_defined?("Apartment::Tenant")
-        end
-
         def active_job_version
           Gem.loaded_specs["activejob"]&.version
         end
@@ -145,7 +141,7 @@ module Que
 
         job_class_set = job_class.set(**job_settings)
 
-        if apartment_defined?
+        if Object.const_defined?("Apartment::Tenant")
           # to correctly set tenant in job_data
           # otherwise it is overwritten and set to public in some ActiveJob callbacks
           Apartment::Tenant.switch tenant do
